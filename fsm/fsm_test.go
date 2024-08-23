@@ -59,5 +59,4 @@ func TestConstructedFSM(t *testing.T) {
 			}
 		})
 	}
-
 }
