@@ -3,6 +3,8 @@ package compiler
 import (
 	"reflect"
 	"testing"
+
+	"github.com/ebriussenex/goregex/fsm"
 )
 
 func TestParser(t *testing.T) {
@@ -38,3 +40,38 @@ func TestParser(t *testing.T) {
 	}
 }
 
+func TestCompiledFSM(t *testing.T) {
+	tokens := lex("abc")
+	parser := NewParser(tokens)
+	ast := parser.Parse()
+
+	initialState, _ := ast.compile()
+
+	type testCase struct {
+		name           string
+		input          string
+		expectedStatus fsm.Status
+	}
+
+	testCases := []testCase{
+		{"empty string", "", fsm.Normal},
+		{"non matching string", "x", fsm.Fail},
+		{"matching string", "abc", fsm.Success},
+		{"partial matching string", "ab", fsm.Normal},
+	}
+
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			runner := fsm.NewRunner(initialState)
+
+			for _, character := range tc.input {
+				runner.Next(character)
+			}
+
+			actualStatus := runner.GetStatus()
+			if tc.expectedStatus != actualStatus {
+				t.Fatalf("expected FSM to have final state of '%v', got '%v'", tc.expectedStatus, actualStatus)
+			}
+		})
+	}
+}
