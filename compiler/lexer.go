@@ -19,7 +19,7 @@ type (
 	}
 )
 
-func lex(input string) []token {
+func Lex(input string) []token {
 	var tokens []token
 	for _, v := range []rune(input) {
 		tokens = append(tokens, lexRune(v))

@@ -4,7 +4,7 @@ import "github.com/ebriussenex/goregex/fsm"
 
 type (
 	Node interface {
-		compile() (head *fsm.State, tail *fsm.State)
+		Compile() (head *fsm.State, tail *fsm.State)
 	}
 
 	CompositeNode interface {
@@ -21,12 +21,12 @@ type (
 	}
 )
 
-func (g *Group) compile() (*fsm.State, *fsm.State) {
+func (g *Group) Compile() (*fsm.State, *fsm.State) {
 	initialState := fsm.State{}
 	curTail := &initialState
 
 	for _, expression := range g.ChildNodes {
-		nextStateHead, nextStateTail := expression.compile()
+		nextStateHead, nextStateTail := expression.Compile()
 		curTail.Merge(nextStateHead)
 		curTail = nextStateTail
 	}
@@ -34,7 +34,7 @@ func (g *Group) compile() (*fsm.State, *fsm.State) {
 	return &initialState, curTail
 }
 
-func (l CharacterLiteral) compile() (*fsm.State, *fsm.State) {
+func (l CharacterLiteral) Compile() (*fsm.State, *fsm.State) {
 	initialState := fsm.State{}
 	endState := &fsm.State{}
 
