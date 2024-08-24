@@ -1,12 +1,12 @@
 package fsm
 
-type runner struct {
+type Runner struct {
 	head    *State
 	current *State
 }
 
-func NewRunner(initialState *State) *runner {
-	r := &runner{
+func NewRunner(initialState *State) *Runner {
+	r := &Runner{
 		head:    initialState,
 		current: initialState,
 	}
@@ -14,7 +14,7 @@ func NewRunner(initialState *State) *runner {
 	return r
 }
 
-func (r *runner) Next(input rune) {
+func (r *Runner) Next(input rune) {
 	if r.current == nil {
 		return
 	}
@@ -22,7 +22,7 @@ func (r *runner) Next(input rune) {
 	r.current = r.current.firstMatchingTransition(input)
 }
 
-func (r *runner) GetStatus() Status {
+func (r *Runner) GetStatus() Status {
 	if r.current == nil {
 		return Fail
 	}
@@ -32,4 +32,8 @@ func (r *runner) GetStatus() Status {
 	}
 
 	return Normal
+}
+
+func (r *Runner) Reset() {
+	r.current = r.head
 }

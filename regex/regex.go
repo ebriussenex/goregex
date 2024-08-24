@@ -21,9 +21,22 @@ func NewRegex(re string) *regex {
 func (r *regex) MatchString(input string) bool {
 	runner := fsm.NewRunner(r.fsm)
 
+	return match(runner, []rune(input))
+}
+
+func match(runner *fsm.Runner, input []rune) bool {
+	runner.Reset()
 	for _, character := range input {
 		runner.Next(character)
-	}
+		status := runner.GetStatus()
 
+		if status == fsm.Fail {
+			return match(runner, input[1:])
+		}
+
+		if status == fsm.Success {
+			return true
+		}
+	}
 	return runner.GetStatus() == fsm.Success
 }

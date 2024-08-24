@@ -2,6 +2,7 @@ package regex
 
 import (
 	"regexp"
+	"strings"
 	"testing"
 )
 
@@ -15,16 +16,11 @@ func TestFSMWithGoStdLibCharacterLiterals(t *testing.T) {
 	nestedExpRegex := "a(b(c))"
 
 	testsCases := []testCase{
-		{"nested expressions", nestedExpRegex, "abcd"},
+		{"nested expressions true", nestedExpRegex, "abcd"},
+		{"nested expressions false", nestedExpRegex, "gghf"},
 	}
 
-	for _, tc := range testsCases {
-		t.Run(
-			tc.name, func(t *testing.T) {
-				compareWithGoStdLib(t, NewRegex(tc.regex), tc.regex, tc.input)
-			},
-		)
-	}
+	testCompareWithStdLib(t, testsCases)
 }
 
 func TestCharacterLiteralRegex(t *testing.T) {
@@ -35,9 +31,15 @@ func TestCharacterLiteralRegex(t *testing.T) {
 		{"non matching string", abcRegex, "xxx"},
 		{"matching string", abcRegex, "abc"},
 		{"partial matching string", abcRegex, "ab"},
-		{"nested expressions", "a(b(c))", "abcd"},
+		{"empty regex", "", "abc"},
+		{"substring not in the beginning", "af", "aaf"},
+		{"substring nor in the beginning and the end", "f", "afa"},
 	}
 
+	testCompareWithStdLib(t, testsCases)
+}
+
+func testCompareWithStdLib(t *testing.T, testsCases []testCase) {
 	for _, tc := range testsCases {
 		t.Run(
 			tc.name, func(t *testing.T) {
@@ -58,8 +60,13 @@ func FuzzTesting(f *testing.F) {
 	f.Add(nestedExpRegex, "cca")
 	f.Add(nestedExpRegex, "cab")
 	f.Add(nestedExpRegex, "cab")
+	f.Add(nestedExpRegex, "zz")
 
 	f.Fuzz(func(t *testing.T, regex, input string) {
+		if strings.ContainsAny(regex, "[{}]|$^*+?.\\") {
+			t.Skip()
+		}
+
 		if _, err := regexp.Compile(regex); err != nil {
 			t.Skip()
 		}
