@@ -63,10 +63,8 @@ func FuzzTesting(f *testing.F) {
 		if _, err := regexp.Compile(regex); err != nil {
 			t.Skip()
 		}
-
 		compareWithGoStdLib(t, NewRegex(regex), regex, input)
 	})
-
 }
 
 func compareWithGoStdLib(t *testing.T, regex *regex, regexStr, input string) {
