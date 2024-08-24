@@ -1,2 +1,2 @@
 test-fuzz:
-	go test ./regex/... -fuzz ^Fuzz$
+	go test ./regex/... -fuzz ^FuzzFSM$

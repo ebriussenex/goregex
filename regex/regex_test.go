@@ -12,7 +12,7 @@ type testCase struct {
 	input string
 }
 
-func TestFSMWithGoStdLibCharacterLiterals(t *testing.T) {
+func TestNestedExpressions(t *testing.T) {
 	nestedExpRegex := "a(b(c))"
 
 	testsCases := []testCase{
@@ -34,6 +34,12 @@ func TestCharacterLiteralRegex(t *testing.T) {
 		{"empty regex", "", "abc"},
 		{"substring not in the beginning", "af", "aaf"},
 		{"substring nor in the beginning and the end", "f", "afa"},
+		{"multibyte characters", "Ȥ", "Ȥ"},
+		{
+			"complex multibyte characters",
+			string([]byte{0xef, 0xbf, 0xbd, 0x30}),
+			string([]byte{0xcc, 0x87, 0x30}),
+		},
 	}
 
 	testCompareWithStdLib(t, testsCases)
@@ -49,7 +55,7 @@ func testCompareWithStdLib(t *testing.T, testsCases []testCase) {
 	}
 }
 
-func FuzzTesting(f *testing.F) {
+func FuzzFSM(f *testing.F) {
 	abcRegex := "abc"
 	f.Add(abcRegex, "abc")
 	f.Add(abcRegex, "abcs")
