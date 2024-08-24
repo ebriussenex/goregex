@@ -29,7 +29,7 @@ func TestParser(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			tokens := lex(tt.input)
+			tokens := Lex(tt.input)
 			p := NewParser(tokens)
 			result := p.Parse()
 
@@ -41,11 +41,11 @@ func TestParser(t *testing.T) {
 }
 
 func TestCompiledFSM(t *testing.T) {
-	tokens := lex("abc")
+	tokens := Lex("abc")
 	parser := NewParser(tokens)
 	ast := parser.Parse()
 
-	initialState, _ := ast.compile()
+	initialState, _ := ast.Compile()
 
 	type testCase struct {
 		name           string
