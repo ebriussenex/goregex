@@ -11,24 +11,24 @@ func TestConstructedFSM(t *testing.T) {
 	stateB := State{}
 	stateC := State{}
 
-	initialState.transitions = append(initialState.transitions, Transition{
+	initialState.Transitions = append(initialState.Transitions, Transition{
 		to: &stateA,
-		predicate: func(input rune) bool {
-			return input == 'a'
+		predicate: Predicate{
+			AllowedChars: "a",
 		},
 	})
 
-	stateA.transitions = append(stateA.transitions, Transition{
+	stateA.Transitions = append(stateA.Transitions, Transition{
 		to: &stateB,
-		predicate: func(input rune) bool {
-			return input == 'b'
+		predicate: Predicate{
+			AllowedChars: "b",
 		},
 	})
 
-	stateB.transitions = append(stateB.transitions, Transition{
+	stateB.Transitions = append(stateB.Transitions, Transition{
 		to: &stateC,
-		predicate: func(input rune) bool {
-			return input == 'c'
+		predicate: Predicate{
+			AllowedChars: "c",
 		},
 	})
 

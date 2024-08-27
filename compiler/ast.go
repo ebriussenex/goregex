@@ -19,6 +19,8 @@ type (
 	CharacterLiteral struct {
 		Character rune
 	}
+
+	WildcardLiteral struct{}
 )
 
 func (g *Group) Compile() (*fsm.State, *fsm.State) {
@@ -35,15 +37,24 @@ func (g *Group) Compile() (*fsm.State, *fsm.State) {
 }
 
 func (l CharacterLiteral) Compile() (*fsm.State, *fsm.State) {
-	initialState := fsm.State{}
-	endState := &fsm.State{}
+	initialState, endState := fsm.State{}, fsm.State{}
 
-	initialState.AddTransition(endState, func(input rune) bool {
-		return input == l.Character
-	})
+	initialState.AddTransition(&endState, fsm.Predicate{
+		AllowedChars: string(l.Character),
+	},
+		string(l.Character),
+	)
 
-	return &initialState, endState
+	return &initialState, &endState
+}
 
+func (w WildcardLiteral) Compile() (*fsm.State, *fsm.State) {
+	initialState, endState := fsm.State{}, fsm.State{}
+
+	initialState.AddTransition(&endState, fsm.Predicate{
+		DisallowedChars: "\n",
+	}, ".")
+	return &initialState, &endState
 }
 func (g *Group) Append(node Node) {
 	g.ChildNodes = append(g.ChildNodes, node)

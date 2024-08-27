@@ -18,6 +18,7 @@ func TestNestedExpressions(t *testing.T) {
 	testsCases := []testCase{
 		{"nested expressions true", nestedExpRegex, "abcd"},
 		{"nested expressions false", nestedExpRegex, "gghf"},
+		{"nested expr diff character", "a(b)(c)", "abc"},
 	}
 
 	testCompareWithStdLib(t, testsCases)
@@ -45,6 +46,17 @@ func TestCharacterLiteralRegex(t *testing.T) {
 	testCompareWithStdLib(t, testsCases)
 }
 
+func TestWildcards(t *testing.T) {
+	wildCardRegex := "ab."
+	testCases := []testCase{
+		{"wildcard success", wildCardRegex, "abc"},
+		{"wildcard fail no character", wildCardRegex, "ab"},
+		{"wildcard succ with more chars", wildCardRegex, "abcc"},
+	}
+
+	testCompareWithStdLib(t, testCases)
+}
+
 func testCompareWithStdLib(t *testing.T, testsCases []testCase) {
 	for _, tc := range testsCases {
 		t.Run(
@@ -68,8 +80,10 @@ func FuzzFSM(f *testing.F) {
 	f.Add(nestedExpRegex, "cab")
 	f.Add(nestedExpRegex, "zz")
 
+	f.Add("a.", "ab")
+
 	f.Fuzz(func(t *testing.T, regex, input string) {
-		if strings.ContainsAny(regex, "[{}]|$^*+?.\\") {
+		if strings.ContainsAny(regex, "[{}]|$^*+?\\") {
 			t.Skip()
 		}
 

@@ -25,6 +25,15 @@ func TestParser(t *testing.T) {
 				},
 			},
 		},
+		{
+			name: "wildcard literal", input: "ab.", expectedResult: &Group{
+				ChildNodes: []Node{
+					CharacterLiteral{Character: 'a'},
+					CharacterLiteral{Character: 'b'},
+					WildcardLiteral{},
+				},
+			},
+		},
 	}
 
 	for _, tt := range tests {
@@ -34,7 +43,7 @@ func TestParser(t *testing.T) {
 			result := p.Parse()
 
 			if !reflect.DeepEqual(result, tt.expectedResult) {
-				t.Fatalf("Expected:\n%+v\nGot:\n%+v\n", tt.expectedResult, result)
+				t.Fatalf("\nExpected:\n%+v\nGot:\n%+v\n", tt.expectedResult, result)
 			}
 		})
 	}

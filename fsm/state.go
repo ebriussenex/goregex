@@ -8,12 +8,12 @@ const (
 
 type Status string
 type State struct {
-	transitions []Transition
+	Transitions []Transition
 }
 
 func (s *State) firstMatchingTransition(input rune) *State {
-	for _, transition := range s.transitions {
-		if transition.predicate(input) {
+	for _, transition := range s.Transitions {
+		if transition.predicate.mustCheck(input) {
 			return transition.to
 		}
 	}
@@ -22,30 +22,31 @@ func (s *State) firstMatchingTransition(input rune) *State {
 }
 
 func (s *State) isSuccessState() bool {
-	if len(s.transitions) == 0 {
+	if len(s.Transitions) == 0 {
 		return true
 	}
 
 	return false
 }
 
-func (s *State) AddTransition(dest *State, predicate Predicate) {
+func (s *State) AddTransition(dest *State, predicate Predicate, debugSymbol string) {
 	t := Transition{
-		to: dest, from: s, predicate: predicate,
+		debugSymbol: debugSymbol,
+		to:          dest, from: s, predicate: predicate,
 	}
 
-	s.transitions = append(s.transitions, t)
+	s.Transitions = append(s.Transitions, t)
 }
 
 func (s *State) clear() {
-	s.transitions = nil
+	s.Transitions = nil
 }
 
 func (s *State) Merge(destState *State) {
 	// a -> b +  c -> d = a -> b -> d
 	// remove leafs from c to b
-	for _, t := range destState.transitions {
-		s.AddTransition(t.to, t.predicate)
+	for _, t := range destState.Transitions {
+		s.AddTransition(t.to, t.predicate, t.debugSymbol)
 	}
 
 	destState.clear()
