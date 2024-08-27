@@ -15,6 +15,8 @@ func (p *Parser) Parse() Node {
 		switch t.symbol {
 		case Char:
 			root.Append(CharacterLiteral{Character: t.letter})
+		case AnyChar:
+			root.Append(WildcardLiteral{})
 		}
 	}
 

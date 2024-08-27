@@ -42,6 +42,8 @@ func lexRune(r rune) token {
 		token.symbol = OneOrMore
 	case '?':
 		token.symbol = ZeroOrOne
+	case '.':
+		token.symbol = AnyChar
 	default:
 		token.symbol = Char
 		token.letter = r
